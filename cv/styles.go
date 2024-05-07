@@ -2,9 +2,7 @@ package cv
 
 import (
 	"github.com/charmbracelet/lipgloss"
-	// "golang.org/x/term"
 	"math"
-	// "os"
 )
 
 func min(a, b int) int {

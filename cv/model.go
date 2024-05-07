@@ -5,8 +5,6 @@ import (
 	"os"
 	"time"
 
-	// "strings"
-
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
@@ -14,18 +12,22 @@ import (
 	"golang.org/x/term"
 )
 
+const LOADING_TIME = 800
+
 type Model struct {
-	width          int
-	physicalWidth  int
-	physicalHeight int
-	cvRendered     string
-	styles         styles
-	r              *lipgloss.Renderer
-	viewport       viewport.Model
-	spinner        spinner.Model
-	loaded         bool
+	width            int
+	physicalWidth    int
+	physicalHeight   int
+	cvRendered       string
+	styles           styles
+	r                *lipgloss.Renderer
+	viewport         viewport.Model
+	spinner          spinner.Model
+	loaded           bool
+	loadingScreenMsg string
 }
 
+type halfLoadingTick struct{}
 type readyMsg struct{}
 
 var (
@@ -45,11 +47,12 @@ func (m *Model) updateWidthAndRender(phy_width, phy_height int) {
 
 func NewModel() *Model {
 	m := Model{
-		width:         MAX_WIDTH,
-		r:             lipgloss.DefaultRenderer(),
-		cvRendered:    "",
-		physicalWidth: p,
-		loaded:        false,
+		width:            MAX_WIDTH,
+		r:                lipgloss.DefaultRenderer(),
+		cvRendered:       "",
+		physicalWidth:    p,
+		loaded:           false,
+		loadingScreenMsg: "cv.hrushi.dev",
 	}
 
 	vp := viewport.New(m.physicalWidth, 20)
@@ -67,13 +70,13 @@ func NewModel() *Model {
 }
 
 func (m Model) Init() tea.Cmd {
-	return tea.Batch(doTick(), m.spinner.Tick)
+	return tea.Batch(doTick(halfLoadingTick{}), m.spinner.Tick)
 }
 
 // loading screen for 600ms
-func doTick() tea.Cmd {
-	return tea.Tick(time.Millisecond*800, func(t time.Time) tea.Msg {
-		return readyMsg{}
+func doTick(msg tea.Msg) tea.Cmd {
+	return tea.Tick(time.Millisecond*LOADING_TIME/2, func(t time.Time) tea.Msg {
+		return msg
 	})
 }
 
@@ -94,6 +97,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.viewport.Height = msg.Height - footerHeight
 		m.updateWidthAndRender(msg.Width, msg.Height)
 		return m, nil
+	case halfLoadingTick:
+		m.loadingScreenMsg = "Hello There!!"
+		return m, doTick(readyMsg{})
 	case readyMsg:
 		m.loaded = true
 		return m, nil
@@ -128,7 +134,7 @@ func (m Model) loadingScreen() string {
 		Width(m.physicalWidth).
 		PaddingTop(h).
 		Align(lipgloss.Center)
-	return style.Render(m.spinner.View() + m.styles.loadingText(" cv.hrushi.dev"))
+	return style.Render(m.spinner.View() + m.styles.loadingText(m.loadingScreenMsg))
 }
 
 func (m Model) footerView() string {
