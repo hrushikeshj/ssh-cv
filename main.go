@@ -23,9 +23,10 @@ import (
 )
 
 const (
-	host = ""
-	port = "2323"
+	host = "localhost"
+	default_port = "2323"
 )
+var port = getenv("CV_PORT", default_port)
 
 func main() {
 	s, err := wish.NewServer(

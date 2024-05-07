@@ -14,6 +14,7 @@ var (
 	p, h, _ = term.GetSize(int(os.Stdout.Fd()))
 )
 
+// standalone bubbletea(without SSH)
 func main() {
 	m := cv.NewModel(p, h, lipgloss.DefaultRenderer())
 	// fmt.Println(m.RenderCV())
