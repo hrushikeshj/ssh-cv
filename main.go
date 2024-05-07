@@ -12,7 +12,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/hrushikeshj/ssh-cv/cv"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/log"
 	"github.com/charmbracelet/ssh"
@@ -20,13 +19,13 @@ import (
 	"github.com/charmbracelet/wish/activeterm"
 	"github.com/charmbracelet/wish/bubbletea"
 	"github.com/charmbracelet/wish/logging"
+	"github.com/hrushikeshj/ssh-cv/cv"
 )
 
-const (
-	host = "localhost"
-	default_port = "2323"
+var (
+	host = getenv("CV_HOST", "localhost")
+	port = getenv("CV_PORT", "2323")
 )
-var port = getenv("CV_PORT", default_port)
 
 func main() {
 	s, err := wish.NewServer(
