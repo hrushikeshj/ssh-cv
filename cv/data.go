@@ -25,6 +25,7 @@ type Project struct {
 }
 
 type CV struct {
+	contact string
 	education []Education
 	experiences []Experience
 	projects []Project
@@ -37,6 +38,7 @@ type Skill struct {
 }
 
 var MyCV = CV{
+	contact: "hrushi2002j@gmail.com • +91 6363337912",
 	education: []Education{
 		{
 			uni: "National Institute of Technology Karnataka",

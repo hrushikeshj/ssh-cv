@@ -57,7 +57,8 @@ func (m Model) renderBlock(roleHead string, points []string) string {
 func (m Model) RenderCV() string {
 	doc := strings.Builder{}
 
-	doc.WriteString(m.styles.nameTitle.Render("\nHrushikesh J") + "\n\n")
+	doc.WriteString(m.styles.nameTitle.Render("\nHrushikesh J") + "\n")
+	doc.WriteString(m.styles.contactInfo.Render(MyCV.contact) + "\n\n")
 	doc.WriteString(m.styles.sectionHeader("Education") + "\n")
 
 	for _, edu := range MyCV.education {

@@ -30,6 +30,7 @@ type styles struct {
 	statusStyle      lipgloss.Style
 	statusText       lipgloss.Style
 	scrollPercent    lipgloss.Style
+	contactInfo      lipgloss.Style
 }
 
 var (
@@ -81,6 +82,9 @@ func (m *Model) makeStyle(r *lipgloss.Renderer) styles {
 		techText:       r.NewStyle().Faint(true).Italic(true),
 		bulletWidth:    r.NewStyle().Width(_width - 5).Foreground(lightText),
 		loadingText:    r.NewStyle().Foreground(loadingTextColor).Render,
+		contactInfo: 	r.NewStyle().Width(_width).
+							Align(lipgloss.Center).
+							Foreground(lipgloss.Color("241")),
 
 		// status bar
 		statusNugget:   statusNugget,
