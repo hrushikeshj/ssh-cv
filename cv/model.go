@@ -53,16 +53,12 @@ func NewModel() *Model {
 	}
 
 	vp := viewport.New(m.physicalWidth, 20)
-	// vp.Style = lipgloss.NewStyle().
-	// 	BorderStyle(lipgloss.RoundedBorder()).
-	// 	BorderForeground(lipgloss.Color("62")).
-	// 	PaddingRight(2)
 	m.viewport = vp
 
 	// spinner
 	s := spinner.New()
 	s.Spinner = spinner.Dot
-	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+	s.Style = m.r.NewStyle().Foreground(lipgloss.Color("205"))
 	m.spinner = s
 
 	// set width
@@ -133,39 +129,14 @@ func (m Model) loadingScreen() string {
 		PaddingTop(h).
 		Align(lipgloss.Center)
 	return style.Render(m.spinner.View() + m.styles.loadingText(" cv.hrushi.dev"))
-	// return m.r.NewStyle().
-	// 			Width(50).
-	// 			Height(60).
-	// 			Align(lipgloss.Center).
-	// 			Render(m.spinner.View() + " Loading!!")
 }
-
-var (
-	statusNugget = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#FFFDF5")).
-			Padding(0, 1)
-	statusBarStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.AdaptiveColor{Light: "#343433", Dark: "#C1C6B2"}).
-			Background(lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#353533"})
-
-	statusStyle = lipgloss.NewStyle().
-			Inherit(statusBarStyle).
-			Foreground(lipgloss.Color("#FFFDF5")).
-			Background(lipgloss.Color("#FF5F87")).
-			Padding(0, 1).
-			MarginRight(1)
-
-	statusText = lipgloss.NewStyle().Inherit(statusBarStyle).Foreground(lipgloss.Color("241"))
-
-	fishCakeStyle = statusNugget.Copy().Background(special).Foreground(lipgloss.Color("#000000"))
-)
 
 func (m Model) footerView() string {
 	w := lipgloss.Width
 
-	statusKey := statusStyle.Render("RESUME")
-	fishCake := fishCakeStyle.Render(fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100))
-	statusVal := statusText.
+	statusKey := m.styles.statusStyle.Render("RESUME")
+	fishCake := m.styles.scrollPercent.Render(fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100))
+	statusVal := m.styles.statusText.
 		Width(m.physicalWidth - w(statusKey) - w(fishCake)).
 		Render("↑/↓: Navigate • q: Quit")
 
@@ -175,5 +146,5 @@ func (m Model) footerView() string {
 		fishCake,
 	)
 
-	return statusBarStyle.Width(m.physicalWidth).Render(bar)
+	return m.styles.statusBarStyle.Width(m.physicalWidth).Render(bar)
 }

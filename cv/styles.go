@@ -27,6 +27,11 @@ type styles struct {
 	techText         lipgloss.Style
 	bulletWidth      lipgloss.Style
 	loadingText      func(strs ...string) string
+	statusNugget     lipgloss.Style
+	statusBarStyle   lipgloss.Style
+	statusStyle      lipgloss.Style
+	statusText       lipgloss.Style
+	scrollPercent    lipgloss.Style
 }
 
 var (
@@ -44,10 +49,16 @@ var (
 const MAX_WIDTH = 80 //75
 
 func (m *Model) makeStyle(r *lipgloss.Renderer) styles {
-	//physicalWidth, _, _ = term.GetSize(int(os.Stdout.Fd()))
-
 	_width := m.width
 	padding := int(math.Floor((float64(m.physicalWidth) - float64(_width)) / 2))
+
+	statusNugget := m.r.NewStyle().
+		Foreground(lipgloss.Color("#FFFDF5")).
+		Padding(0, 1)
+	statusBarStyle := m.r.NewStyle().
+		Foreground(lipgloss.AdaptiveColor{Light: "#343433", Dark: "#C1C6B2"}).
+		Background(lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#353533"})
+
 	return styles{
 		body: r.NewStyle().Width(_width).
 			MarginLeft(padding).
@@ -72,5 +83,17 @@ func (m *Model) makeStyle(r *lipgloss.Renderer) styles {
 		techText:       r.NewStyle().Faint(true).Italic(true),
 		bulletWidth:    r.NewStyle().Width(_width - 5).Foreground(lightText),
 		loadingText:    r.NewStyle().Foreground(loadingTextColor).Render,
+
+		// status bar
+		statusNugget:   statusNugget,
+		statusBarStyle: statusBarStyle,
+		statusStyle: m.r.NewStyle().
+			Inherit(statusBarStyle).
+			Foreground(lipgloss.Color("#FFFDF5")).
+			Background(lipgloss.Color("#FF5F87")).
+			Padding(0, 1).
+			MarginRight(1),
+		statusText:    m.r.NewStyle().Inherit(statusBarStyle).Foreground(lipgloss.Color("241")),
+		scrollPercent: statusNugget.Copy().Background(special).Foreground(lipgloss.Color("#000000")),
 	}
 }

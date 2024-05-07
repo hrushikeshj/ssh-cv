@@ -23,7 +23,7 @@ func (m Model) renderEduHeader(uni, date, degree, cgpa string) string {
 }
 
 func (m Model) renderProjectHeader(name, tech string) string {
-	var div string = lipgloss.NewStyle().Foreground(special).Render(" | ")
+	var div string = m.r.NewStyle().Foreground(special).Render(" | ")
 
 	return lipgloss.JoinHorizontal(lipgloss.Bottom, name, div, m.styles.techText.Render(tech))
 }
@@ -87,7 +87,7 @@ func (m Model) RenderCV() string {
 	doc.WriteString(m.styles.sectionHeader("Technical Skills") + "\n")
 	skl := strings.Builder{}
 	for _, skill := range MyCV.skills {
-		skl.WriteString(lipgloss.NewStyle().Faint(true).Render(skill.typ+": ") + skill.skills)
+		skl.WriteString(m.r.NewStyle().Faint(true).Render(skill.typ+": ") + skill.skills)
 		skl.WriteRune('\n')
 	}
 	doc.WriteString(m.styles.sectionBlock(skl.String()))
