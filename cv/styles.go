@@ -56,7 +56,9 @@ func (m *Model) makeStyle(r *lipgloss.Renderer) styles {
 		Padding(0, 1)
 	statusBarStyle := m.r.NewStyle().
 		Foreground(lipgloss.AdaptiveColor{Light: "#343433", Dark: "#C1C6B2"}).
-		Background(lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#353533"})
+		Background(lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#878783"})
+		// #353533 is better fo dark, but doesn't work in ssh for some reason
+		// (so used 878783)
 
 	return styles{
 		body: r.NewStyle().Width(_width).
