@@ -37,7 +37,6 @@ func (m Model) renderRole(role, date, company string) string {
 		m.styles.duration.Width(middle_buf).Align(lipgloss.Right).Render(date))
 
 	return lipgloss.JoinVertical(lipgloss.Left, head, m.styles.companyDisplay.Render(company))
-
 }
 
 func (m Model) renderPoints(points []string) string {

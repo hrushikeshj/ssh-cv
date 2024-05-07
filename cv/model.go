@@ -2,14 +2,12 @@ package cv
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"golang.org/x/term"
 )
 
 const LOADING_TIME = 800
@@ -30,11 +28,9 @@ type Model struct {
 type halfLoadingTick struct{}
 type readyMsg struct{}
 
-var (
-	p, h, _ = term.GetSize(int(os.Stdout.Fd()))
-)
 
-func (m *Model) updateWidthAndRender(phy_width, phy_height int) {
+
+func (m *Model) UpdateWidthAndRender(phy_width, phy_height int) {
 	m.physicalWidth = phy_width
 	m.physicalHeight = phy_height
 	m.width = min(MAX_WIDTH, m.physicalWidth)
@@ -45,12 +41,13 @@ func (m *Model) updateWidthAndRender(phy_width, phy_height int) {
 	m.viewport.SetContent(m.cvRendered)
 }
 
-func NewModel() *Model {
+func NewModel(width, height int, r *lipgloss.Renderer) *Model {
 	m := Model{
 		width:            MAX_WIDTH,
-		r:                lipgloss.DefaultRenderer(),
+		r:                r,
 		cvRendered:       "",
-		physicalWidth:    p,
+		physicalWidth:    width,
+		physicalHeight:   height,
 		loaded:           false,
 		loadingScreenMsg: "cv.hrushi.dev",
 	}
@@ -65,7 +62,7 @@ func NewModel() *Model {
 	m.spinner = s
 
 	// set width
-	m.updateWidthAndRender(m.physicalWidth, h)
+	m.UpdateWidthAndRender(width, height)
 	return &m
 }
 
@@ -95,7 +92,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		footerHeight := lipgloss.Height(m.footerView())
 		m.viewport.Width = msg.Width
 		m.viewport.Height = msg.Height - footerHeight
-		m.updateWidthAndRender(msg.Width, msg.Height)
+		m.UpdateWidthAndRender(msg.Width, msg.Height)
 		return m, nil
 	case halfLoadingTick:
 		m.loadingScreenMsg = "Hello There!!"

@@ -1,0 +1,26 @@
+package main
+
+import (
+	"fmt"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/hrushikeshj/ssh-cv/cv"
+	"golang.org/x/term"
+	"github.com/charmbracelet/lipgloss"
+
+	"os"
+)
+
+var (
+	p, h, _ = term.GetSize(int(os.Stdout.Fd()))
+)
+
+func main() {
+	m := cv.NewModel(p, h, lipgloss.DefaultRenderer())
+	// fmt.Println(m.RenderCV())
+
+	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseAllMotion())
+	if _, err := p.Run(); err != nil {
+		fmt.Printf("Alas, there's been an error: %v", err)
+		os.Exit(1)
+	}
+}
