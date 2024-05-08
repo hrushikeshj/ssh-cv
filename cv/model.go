@@ -23,6 +23,7 @@ type Model struct {
 	spinner          spinner.Model
 	loaded           bool
 	loadingScreenMsg string
+	ll int
 }
 
 type halfLoadingTick struct{}
@@ -39,6 +40,8 @@ func (m *Model) UpdateWidthAndRender(phy_width, phy_height int) {
 
 	m.cvRendered = m.RenderCV()
 	m.viewport.SetContent(m.cvRendered)
+
+	m.ll += 1
 }
 
 func NewModel(width, height int, r *lipgloss.Renderer) *Model {
@@ -50,6 +53,7 @@ func NewModel(width, height int, r *lipgloss.Renderer) *Model {
 		physicalHeight:   height,
 		loaded:           false,
 		loadingScreenMsg: "cv.hrushi.dev",
+		ll : 0,
 	}
 
 	vp := viewport.New(m.physicalWidth, 20)
@@ -104,6 +108,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.loaded { // end animation, if loaded
 			return m, nil
 		}
+		m.ll += 1
 		var cmd tea.Cmd
 		m.spinner, cmd = m.spinner.Update(msg)
 		return m, cmd

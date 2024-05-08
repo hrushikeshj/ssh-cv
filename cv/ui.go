@@ -1,6 +1,7 @@
 package cv
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -56,7 +57,7 @@ func (m Model) renderBlock(roleHead string, points []string) string {
 func (m Model) RenderCV() string {
 	doc := strings.Builder{}
 
-	doc.WriteString(m.styles.nameTitle.Render("\nHrushikesh J") + "\n")
+	doc.WriteString(m.styles.nameTitle.Render("\nHrushikesh J " + fmt.Sprintf("%d", m.ll)) + "\n")
 	doc.WriteString(m.styles.contactInfo.Render(MyCV.contact) + "\n\n")
 	doc.WriteString(m.styles.sectionHeader("Education") + "\n")
 
