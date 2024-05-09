@@ -60,7 +60,6 @@ func main() {
 	}
 }
 
-
 func teaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	pty, _, _ := s.Pty()
 	renderer := bubbletea.MakeRenderer(s)
