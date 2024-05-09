@@ -12,6 +12,14 @@ import (
 
 const LOADING_TIME = 800
 
+type currentScreen int
+
+const (
+	cv currentScreen = iota
+	links
+	game
+)
+
 type Model struct {
 	width            int
 	physicalWidth    int
@@ -23,12 +31,11 @@ type Model struct {
 	spinner          spinner.Model
 	loaded           bool
 	loadingScreenMsg string
+	currentView      currentScreen
 }
 
 type halfLoadingTick struct{}
 type readyMsg struct{}
-
-
 
 func (m *Model) UpdateWidthAndRender(phy_width, phy_height int) {
 	m.physicalWidth = phy_width
@@ -50,6 +57,7 @@ func NewModel(width, height int, r *lipgloss.Renderer) *Model {
 		physicalHeight:   height,
 		loaded:           false,
 		loadingScreenMsg: "cv.hrushi.dev",
+		currentView:      cv,
 	}
 
 	vp := viewport.New(m.physicalWidth, 20)
@@ -81,8 +89,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c", "esc":
+		case "q", "ctrl+c":
 			return m, tea.Quit
+		case "esc":
+			switch m.currentView {
+			case links:
+				// go back to cv
+				m.currentView = cv
+				return m, nil
+			}
+
+			return m, tea.Quit
+		case "l", "L":
+			m.currentView = links
+			return m, nil
 		default:
 			var cmd tea.Cmd
 			m.viewport, cmd = m.viewport.Update(msg)
@@ -117,8 +137,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
+	//return fmt.Sprintf("%s\n%s", m.linksView(), m.footerView())
 	if m.loaded {
-		return fmt.Sprintf("%s\n%s", m.viewport.View(), m.footerView())
+		var view string = "_"
+		switch m.currentView {
+		case cv:
+			view = m.viewport.View()
+		case links:
+			view = m.linksView()
+		}
+
+		return fmt.Sprintf("%s\n%s", view, m.footerView())
 	}
 
 	return m.loadingScreen()
@@ -141,7 +170,7 @@ func (m Model) footerView() string {
 	fishCake := m.styles.scrollPercent.Render(fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100))
 	statusVal := m.styles.statusText.
 		Width(m.physicalWidth - w(statusKey) - w(fishCake)).
-		Render("↑/↓: Navigate • q: Quit")
+		Render("↑/↓: Navigate • l: Links • esc: Back • q: Quit")
 
 	bar := lipgloss.JoinHorizontal(lipgloss.Top,
 		statusKey,

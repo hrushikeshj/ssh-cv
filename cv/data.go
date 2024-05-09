@@ -3,57 +3,63 @@ package cv
 // https://github.com/charmbracelet/bubbletea/blob/master/examples/glamour/main.go
 
 type Education struct {
-	uni string
+	uni    string
 	degree string
-	start string
-	end string
-	cgpa string
+	start  string
+	end    string
+	cgpa   string
 }
 
 type Experience struct {
-	role string
+	role    string
 	company string
-	start string
-	end string
-	points []string
+	start   string
+	end     string
+	points  []string
 }
 
 type Project struct {
-	name string
-	tech string
+	name   string
+	tech   string
 	points []string
 }
 
-type CV struct {
-	contact string
-	education []Education
-	experiences []Experience
-	projects []Project
-	skills []Skill
+type Skill struct {
+	typ    string
+	skills string
 }
 
-type Skill struct {
-	typ string
-	skills string
+type link struct {
+	name string
+	url  string
+}
+
+type CV struct {
+	contact     string
+	education   []Education
+	experiences []Experience
+	projects    []Project
+	skills      []Skill
+	links       []link
 }
 
 var MyCV = CV{
 	contact: "hrushi2002j@gmail.com • +91 6363337912",
 	education: []Education{
 		{
-			uni: "National Institute of Technology Karnataka",
+			uni:    "National Institute of Technology Karnataka",
 			degree: "Bachelor of Technology in CSE, Minor in ECE",
-			start: "December 2020",
-			end: "April 2024",
-			cgpa: "8.54",
+			start:  "December 2020",
+			end:    "April 2024",
+			cgpa:   "8.54",
 		},
 	},
 	experiences: []Experience{
 		{
-			role: "Web Developer",
+			role:    "Web Developer",
 			company: "IRIS, NITK",
-			start: "March 2021",
-			end: "April 2024",
+			start:   "March 2021",
+			end:     "April 2024",
 			points: []string{
 				"IRIS is the Management Information System(MIS) developed for automating all administrative and academic activities at NITK.",
 				"Developed Time Table module for students and professors to keep track of classes, exams, assignments, and other course activities",
@@ -62,10 +68,10 @@ var MyCV = CV{
 			},
 		},
 		{
-			role: "Web Developer",
+			role:    "Web Developer",
 			company: "Centre for Innovation, IPR and Industrial Consultancy(CIC), NITK",
-			start: "January 2023",
-			end: "June 2023",
+			start:   "January 2023",
+			end:     "June 2023",
 			points: []string{
 				"Developed a portal to track consultancy and testing work at NITK and digitized the approval process.",
 				"Faculty can create proposals and track their approval status.",
@@ -106,16 +112,30 @@ var MyCV = CV{
 	},
 	skills: []Skill{
 		{
-			typ: "Languages  ",
+			typ:    "Languages  ",
 			skills: "Python, C/C++, Ruby, Golang, JavaScript, SQL",
 		},
 		{
-			typ: "Frameworks ",
+			typ:    "Frameworks ",
 			skills: "Django, Ruby on Rails, Flask, React",
 		},
 		{
-			typ: "Dev Tools  ",
+			typ:    "Dev Tools  ",
 			skills: "Git, GitHub Actions, GCP, Docker, Terraform, Kubernetes",
+		},
+	},
+	links: []link{
+		{
+			name: "Personal Website",
+			url:  "http://hrushi.dev",
+		},
+		{
+			name: "GitHub",
+			url:  "https://github.com/hrushikeshj",
+		},
+		{
+			name: "LinkedIn",
+			url:  "https://www.linkedin.com/in/hrushikeshj/",
 		},
 	},
 }
