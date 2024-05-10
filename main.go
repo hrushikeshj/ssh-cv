@@ -8,6 +8,7 @@ import (
 	"errors"
 	"net"
 	"os"
+	"runtime"
 	"os/signal"
 	"syscall"
 	"time"
@@ -25,12 +26,26 @@ import (
 var (
 	host = getenv("CV_HOST", "localhost")
 	port = getenv("CV_PORT", "2323")
+	cert_path = getenv("CV_CERT_PATH", "")
 )
+
+func getCertPath() string{
+	if runtime.GOOS == "windows" && cert_path == ""{
+		return ".ssh/win_id_ed25519"
+	}
+
+	if _, err := os.Stat(cert_path); os.IsNotExist(err) {
+		log.Error("The `%s` cert path is invalid.", cert_path)
+		panic("The certificate path is invalid")
+	}
+
+	return cert_path
+}
 
 func main() {
 	s, err := wish.NewServer(
 		wish.WithAddress(net.JoinHostPort(host, port)),
-		wish.WithHostKeyPath(".ssh/id_ed25519"),
+		wish.WithHostKeyPath(getCertPath()),
 		wish.WithMiddleware(
 			bubbletea.Middleware(teaHandler),
 			activeterm.Middleware(), // Bubble Tea apps usually require a PTY.
