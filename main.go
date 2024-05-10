@@ -6,10 +6,11 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 	"os"
-	"runtime"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"time"
 
@@ -29,13 +30,14 @@ var (
 	cert_path = getenv("CV_CERT_PATH", "")
 )
 
+// on prod to prevent certificate errors
 func getCertPath() string{
 	if runtime.GOOS == "windows" && cert_path == ""{
 		return ".ssh/win_id_ed25519"
 	}
 
 	if _, err := os.Stat(cert_path); os.IsNotExist(err) {
-		log.Error("The `%s` cert path is invalid.", cert_path)
+		log.Error(fmt.Sprintf("The `%s` cert path is invalid.", cert_path))
 		panic("The certificate path is invalid")
 	}
 
