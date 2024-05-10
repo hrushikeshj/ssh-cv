@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/hrushikeshj/ssh-cv/minesweeper"
 )
 
 const LOADING_TIME = 800
@@ -32,6 +33,7 @@ type Model struct {
 	loaded           bool
 	loadingScreenMsg string
 	currentView      currentScreen
+	mineGame         minesweeper.Model
 }
 
 type halfLoadingTick struct{}
@@ -46,6 +48,9 @@ func (m *Model) UpdateWidthAndRender(phy_width, phy_height int) {
 
 	m.cvRendered = m.RenderCV()
 	m.viewport.SetContent(m.cvRendered)
+
+	// minesweeper
+	m.mineGame.UpdatePhyWidth(phy_width)
 }
 
 func NewModel(width, height int, r *lipgloss.Renderer) *Model {
@@ -58,6 +63,7 @@ func NewModel(width, height int, r *lipgloss.Renderer) *Model {
 		loaded:           false,
 		loadingScreenMsg: "cv.hrushi.dev",
 		currentView:      cv,
+		mineGame:         minesweeper.NewGame(5, 8, width, r),
 	}
 
 	vp := viewport.New(m.physicalWidth, 20)
@@ -93,7 +99,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "esc":
 			switch m.currentView {
-			case links:
+			case links, game:
 				// go back to cv
 				m.currentView = cv
 				return m, nil
@@ -103,8 +109,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "l", "L":
 			m.currentView = links
 			return m, nil
+		case "g", "G":
+			m.currentView = game
+			return m, nil
 		default:
 			var cmd tea.Cmd
+			if m.currentView == game {
+				m.mineGame, cmd = m.mineGame.Update(msg)
+				return m, cmd
+			}
 			m.viewport, cmd = m.viewport.Update(msg)
 			return m, cmd
 		}
@@ -137,7 +150,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	//return fmt.Sprintf("%s\n%s", m.linksView(), m.footerView())
+	footer := m.footerView()
+
 	if m.loaded {
 		var view string = "_"
 		switch m.currentView {
@@ -145,9 +159,22 @@ func (m Model) View() string {
 			view = m.viewport.View()
 		case links:
 			view = m.linksView()
+		case game:
+			game := m.mineGame.View()
+			height := m.physicalHeight - lipgloss.Height(footer)
+			paddingTop := (height - lipgloss.Height(game)) / 2
+			if paddingTop >= 3 {
+				paddingTop -= 3
+			}
+
+			view = m.r.NewStyle().
+				Height(height).
+				PaddingTop(paddingTop).
+				Align(lipgloss.Center).
+				Render(game)
 		}
 
-		return fmt.Sprintf("%s\n%s", view, m.footerView())
+		return lipgloss.JoinVertical(lipgloss.Left, view, m.footerView())
 	}
 
 	return m.loadingScreen()
@@ -166,11 +193,18 @@ func (m Model) loadingScreen() string {
 func (m Model) footerView() string {
 	w := lipgloss.Width
 
-	statusKey := m.styles.statusStyle.Render("RESUME")
+	state := "RESUME"
+	if m.currentView == game {
+		state = "MIESWEEPER"
+	} else if m.currentView == links {
+		state = "LINKS"
+	}
+
+	statusKey := m.styles.statusStyle.Render(state)
 	fishCake := m.styles.scrollPercent.Render(fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100))
 	statusVal := m.styles.statusText.
 		Width(m.physicalWidth - w(statusKey) - w(fishCake)).
-		Render("↑/↓: Navigate • l: Links • esc: Back • q: Quit")
+		Render("↑/↓: Navigate • l: Links • g: game • esc: Back • q: Quit")
 
 	bar := lipgloss.JoinHorizontal(lipgloss.Top,
 		statusKey,

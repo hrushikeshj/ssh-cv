@@ -1,2 +1,3 @@
 *.exe
 .ssh/*
+debug.log
