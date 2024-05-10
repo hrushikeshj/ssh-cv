@@ -29,6 +29,7 @@ type styles struct {
 	statusBarStyle   lipgloss.Style
 	statusStyle      lipgloss.Style
 	statusText       lipgloss.Style
+	statusTextBegin  lipgloss.Style
 	scrollPercent    lipgloss.Style
 	contactInfo      lipgloss.Style
 	linksBox         lipgloss.Style
@@ -100,6 +101,7 @@ func (m *Model) makeStyle(r *lipgloss.Renderer) styles {
 			Padding(0, 1).
 			MarginRight(1),
 		statusText:    m.r.NewStyle().Inherit(statusBarStyle).Foreground(lipgloss.Color("241")),
+		statusTextBegin:    m.r.NewStyle().Inherit(statusBarStyle).Foreground(lipgloss.Color("#FF5F87")),
 		scrollPercent: statusNugget.Copy().Background(special).Foreground(lipgloss.Color("#000000")),
 		linksBox: m.r.NewStyle().
 			Border(lipgloss.RoundedBorder()).

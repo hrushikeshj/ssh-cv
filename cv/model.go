@@ -22,22 +22,24 @@ const (
 )
 
 type Model struct {
-	width            int
-	physicalWidth    int
-	physicalHeight   int
-	cvRendered       string
-	styles           styles
-	r                *lipgloss.Renderer
-	viewport         viewport.Model
-	spinner          spinner.Model
-	loaded           bool
-	loadingScreenMsg string
-	currentView      currentScreen
-	mineGame         minesweeper.Model
+	width                   int
+	physicalWidth           int
+	physicalHeight          int
+	cvRendered              string
+	styles                  styles
+	r                       *lipgloss.Renderer
+	viewport                viewport.Model
+	spinner                 spinner.Model
+	loaded                  bool
+	loadingScreenMsg        string
+	currentView             currentScreen
+	mineGame                minesweeper.Model
+	statusBarGameColorFlash lipgloss.Style
 }
 
 type halfLoadingTick struct{}
 type readyMsg struct{}
+type statusBarColorFLash struct{}
 
 func (m *Model) UpdateWidthAndRender(phy_width, phy_height int) {
 	m.physicalWidth = phy_width
@@ -77,17 +79,27 @@ func NewModel(width, height int, r *lipgloss.Renderer) *Model {
 
 	// set width
 	m.UpdateWidthAndRender(width, height)
+
+	// set status color
+	m.statusBarGameColorFlash = m.styles.statusTextBegin
+
 	return &m
 }
 
 func (m Model) Init() tea.Cmd {
-	return tea.Batch(doTick(halfLoadingTick{}), m.spinner.Tick)
+	return tea.Batch(doTick(halfLoadingTick{}), statusBarColorFLashTick(), m.spinner.Tick)
 }
 
 // loading screen for 600ms
 func doTick(msg tea.Msg) tea.Cmd {
 	return tea.Tick(time.Millisecond*LOADING_TIME/2, func(t time.Time) tea.Msg {
 		return msg
+	})
+}
+
+func statusBarColorFLashTick() tea.Cmd {
+	return tea.Tick(time.Millisecond*2000, func(t time.Time) tea.Msg {
+		return statusBarColorFLash{}
 	})
 }
 
@@ -132,6 +144,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, doTick(readyMsg{})
 	case readyMsg:
 		m.loaded = true
+		return m, nil
+	case statusBarColorFLash:
+		m.statusBarGameColorFlash = m.styles.statusText
 		return m, nil
 	case spinner.TickMsg:
 		if m.loaded { // end animation, if loaded
@@ -202,7 +217,7 @@ func (m Model) footerView() string {
 
 	statusKey := m.styles.statusStyle.Render(state)
 	fishCake := m.styles.scrollPercent.Render(fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100))
-	statusVal := m.styles.statusText.
+	statusVal := m.statusBarGameColorFlash.
 		Width(m.physicalWidth - w(statusKey) - w(fishCake)).
 		Render("↑/↓: Navigate • l: Links • g: game • esc: Back • q: Quit")
 
