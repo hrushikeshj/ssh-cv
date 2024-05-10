@@ -38,6 +38,10 @@ func getCertPath() string{
 
 	if _, err := os.Stat(cert_path); os.IsNotExist(err) {
 		log.Error(fmt.Sprintf("The `%s` cert path is invalid.", cert_path))
+		
+		// `wish.WithHostKeyPath` generated the key in the
+		// `specified` path, if the key doesn't exist/
+		// to prevet this calling panic
 		panic("The certificate path is invalid")
 	}
 
