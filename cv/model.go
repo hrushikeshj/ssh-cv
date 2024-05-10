@@ -63,7 +63,7 @@ func NewModel(width, height int, r *lipgloss.Renderer) *Model {
 		loaded:           false,
 		loadingScreenMsg: "cv.hrushi.dev",
 		currentView:      cv,
-		mineGame:         minesweeper.NewGame(5, 8, width, r),
+		mineGame:         minesweeper.NewGame(6, 10, width, r),
 	}
 
 	vp := viewport.New(m.physicalWidth, 20)

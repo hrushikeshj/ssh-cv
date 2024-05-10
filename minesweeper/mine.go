@@ -10,7 +10,7 @@ import (
 
 type gameState int
 
-const MINE_PERCENTAGE = 5
+const MINE_PERCENTAGE = 20
 const (
 	starting gameState = iota
 	playing
@@ -51,7 +51,7 @@ func NewGame(row, col, phy_width int, renderer *lipgloss.Renderer) Model {
 		col:        col,
 		r:          renderer,
 		phy_width:  phy_width,
-		curPos:     pos{x: 0, y: 0},
+		curPos:     pos{x: rand.IntN(row), y: rand.IntN(col)},
 		KeyMap:     DefaultKeyMap(),
 		mine_count: (row * col) * MINE_PERCENTAGE / 100,
 		gameState:  starting,
