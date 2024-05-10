@@ -1,0 +1,17 @@
+[Unit]
+Description=SSH CV
+After=network.target
+
+[Service]
+Type=simple
+User=hrushi2002j
+Group=hrushi2002j
+Environment="CV_PORT=2222"
+Environment="CV_HOST=0.0.0.0"
+Environment="CV_CERT_PATH=/etc/ssh-cv/ssh_cv_ed25519"
+WorkingDirectory=/home/hrushi2002j/ssh-cv/
+ExecStart=/home/hrushi2002j/ssh-cv/ssh-cv
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
