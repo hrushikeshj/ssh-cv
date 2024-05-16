@@ -65,7 +65,7 @@ var MyCV = CV{
 				//"Developed Time Table module for students and professors to keep track of classes, exams, assignments, and other course activities",
 				"Added Post Doctoral Fellowship application to the existing Applications module",
 				"Implemented API endpoints for the Time Table and Forms module, and wrote API documentation for the App Team.",
-				"Contributed to the development of various modules like Admissions, Branch Change, Courses and No-Dues which are used by over 7000 students.",
+				"Implemented new features for various modules like Admissions, Branch Change, Courses and No-Dues which are used by over 7000 students.",
 			},
 		},
 		{
